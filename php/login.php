@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Verificar se é uma alteração de senha
+  
     if (isset($_POST['action']) && $_POST['action'] === 'change_password') {
         if (!isset($_SESSION['user_id'])) {
             echo json_encode(['success' => false, 'message' => 'Usuário não autenticado']);
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo = conectarBanco();
             
-            // Atualizar senha e marcar que não é mais primeiro login
+       
             $stmt = $pdo->prepare("UPDATE usuarios SET senha = ?, primeiro_login = FALSE WHERE id = ?");
             $stmt->execute([password_hash($nova_senha, PASSWORD_DEFAULT), $user_id]);
             
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Processo de login normal
+
     $email = $_POST['email'] ?? '';
     $senha = $_POST['senha'] ?? '';
     
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo = conectarBanco();
         
-        // Buscar usuário pelo email
+    
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
         $stmt->execute([$email]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -53,31 +53,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        // Verificar se a conta está bloqueada
+      
         if ($usuario['status'] === 'bloqueado') {
             echo json_encode(['success' => false, 'message' => 'Conta bloqueada. Entre em contato com o administrador.']);
             exit;
         }
         
-        // Verificar se a conta está inativa
+      
         if ($usuario['status'] === 'inativo') {
             echo json_encode(['success' => false, 'message' => 'Conta inativa. Entre em contato com o administrador.']);
             exit;
         }
         
-        // Verificar senha
+
         if (password_verify($senha, $usuario['senha']) || $senha === $usuario['senha']) {
             // Login bem-sucedido - resetar tentativas
             $stmt = $pdo->prepare("UPDATE usuarios SET tentativas_login = 0 WHERE id = ?");
             $stmt->execute([$usuario['id']]);
             
-            // Criar sessão
+    
             $_SESSION['user_id'] = $usuario['id'];
             $_SESSION['user_name'] = $usuario['nome'];
             $_SESSION['user_email'] = $usuario['email'];
             $_SESSION['is_admin'] = ($usuario['email'] === 'admin@perfume.com');
             
-            // Verificar se é primeiro login
+ 
             if ($usuario['primeiro_login']) {
                 echo json_encode([
                     'success' => true, 
@@ -85,19 +85,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'message' => 'Primeiro login detectado'
                 ]);
             } else {
-                echo json_encode([
-                    'success' => true, 
-                    'first_login' => false,
-                    'redirect' => '../html/dashboard.html'
-                ]);
+        
+                if ($usuario['email'] === 'admin@perfume.com') {
+                    echo json_encode([
+                        'success' => true, 
+                        'first_login' => false,
+                        'redirect' => '../html/dashboard.html'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => true, 
+                        'first_login' => false,
+                        'redirect' => '../homepage.html'
+                    ]);
+                }
             }
             
         } else {
-            // Senha incorreta - incrementar tentativas
+        
             $novas_tentativas = $usuario['tentativas_login'] + 1;
             
             if ($novas_tentativas >= 3) {
-                // Bloquear conta após 3 tentativas
+            
                 $stmt = $pdo->prepare("UPDATE usuarios SET tentativas_login = ?, status = 'bloqueado' WHERE id = ?");
                 $stmt->execute([$novas_tentativas, $usuario['id']]);
                 
@@ -106,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'message' => 'Conta bloqueada após 3 tentativas incorretas. Entre em contato com o administrador.'
                 ]);
             } else {
-                // Incrementar tentativas
+             
                 $stmt = $pdo->prepare("UPDATE usuarios SET tentativas_login = ? WHERE id = ?");
                 $stmt->execute([$novas_tentativas, $usuario['id']]);
                 
@@ -126,4 +135,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['success' => false, 'message' => 'Método não permitido']);
 }
 ?>
-
