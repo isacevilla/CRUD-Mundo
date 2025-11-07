@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfume Store - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h1 class="logo">Perfume Store</h1>
+                <p class="subtitle">Admin Panel</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="#" data-section="users">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-text">Usuários</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" data-section="products">
+                            <span class="nav-icon">🧴</span>
+                            <span class="nav-text">Produtos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" data-section="orders">
+                            <span class="nav-icon">📦</span>
+                            <span class="nav-text">Pedidos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" data-section="settings">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span id="userInitials">AD</span>
+                </div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Administrador</span>
+                    <span class="user-role">Admin</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h2 class="page-title">Gerenciamento de Usuários</h2>
+                    <p class="page-subtitle">Visualize e gerencie todos os usuários do sistema</p>
+                </div>
+                <div class="header-right">
+                    <button class="add-user-btn" onclick="openAddUserModal()">
+                        <span>+</span>
+                        Adicionar Usuário
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" id="totalUsers">0</h3>
+                        <p class="stat-label">Total de Usuários</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" id="activeUsers">0</h3>
+                        <p class="stat-label">Usuários Ativos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚫</div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" id="blockedUsers">0</h3>
+                        <p class="stat-label">Usuários Bloqueados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" id="newUsersToday">0</h3>
+                        <p class="stat-label">Novos Hoje</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Lista de Usuários</h3>
+                    <div class="table-filters">
+                        <select id="statusFilter" onchange="filterUsers()">
+                            <option value="">Todos os Status</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                            <option value="bloqueado">Bloqueado</option>
+                        </select>
+                        <input type="text" id="searchInput" placeholder="Buscar usuário..." onkeyup="searchUsers()">
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Data de Cadastro</th>
+                                <th>Tentativas</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Dados serão carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Usuário -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Adicionar Usuário</h2>
+                <button class="close-btn" onclick="closeUserModal()">&times;</button>
+            </div>
+            <form id="userForm" class="user-form">
+                <input type="hidden" id="userId" name="userId">
+                
+                <div class="form-group">
+                    <label for="userName">Nome</label>
+                    <input type="text" id="userNameInput" name="userName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmailInput" name="userEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userPassword">Senha</label>
+                    <input type="password" id="userPasswordInput" name="userPassword">
+                    <small class="form-hint">Deixe em branco para manter a senha atual (apenas edição)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userStatus">Status</label>
+                    <select id="userStatusInput" name="userStatus" required>
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                        <option value="bloqueado">Bloqueado</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content confirm-modal">
+            <div class="modal-header">
+                <h2>Confirmar Ação</h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Tem certeza que deseja realizar esta ação?</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+                <button type="button" class="btn-danger" id="confirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
+

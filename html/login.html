@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfume Store - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <div class="background">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="logo-section">
+                    <h1 class="logo">Perfume Store</h1>
+                    <p class="subtitle">Fragrâncias Sofisticadas</p>
+                </div>
+                
+                <form id="loginForm" class="login-form" action="../php/login.php" method="POST">
+                    <div class="input-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" name="senha" required>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Entrar</button>
+                    
+                    <div class="forgot-password">
+                        <a href="#">Esqueceu sua senha?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para primeiro login -->
+    <div id="firstLoginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Primeiro Acesso</h2>
+                <p>Por segurança, altere sua senha no primeiro login</p>
+            </div>
+            <form id="changePasswordForm" class="change-password-form">
+                <div class="input-group">
+                    <label for="novaSenha">Nova Senha</label>
+                    <input type="password" id="novaSenha" name="novaSenha" required minlength="6">
+                </div>
+                
+                <div class="input-group">
+                    <label for="confirmarSenha">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" required minlength="6">
+                </div>
+                
+                <button type="submit" class="change-password-btn">Alterar Senha</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/login.js"></script>
+</body>
+</html>
+
